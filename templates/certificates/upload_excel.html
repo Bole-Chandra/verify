@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Certificate Details - {{ certificate.full_name }}{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Excel - Certificate Generator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: #f0f4f8;
+        }
+        .upload-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 700px;
+            margin: 5rem auto;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+        }
+        .btn-custom {
+            background-color: orange;
+            color: #fff;
+            font-weight: 600;
+        }
+        .btn-view-format {
+            background-color: orange;
+            color: #fff;
+            font-weight: 600;
+            border: 2px solid orange;
+        }
+        .a:hover {
+            background-color: none !important;
+            color: none !important;
+            box-shadow: none !important;
+        }
+        
+        .btn-view-format ,button:hover {
+        background-color: orange !important;
+        color: #fff !important;
+        box-shadow: none !important;
+    }
+    
+    </style>
+</head>
+<body>
+    <div class="upload-card">
+        <h3 class="text-center mb-4">📄 Upload  Excel File</h3>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row mb-3 align-items-center">
+                <!-- Upload Field -->
+                <div class="col-md-8">
+                    {{ form.excel_file.label_tag }}
+                    {{ form.excel_file }}
+                </div>
+
+                <!-- View Format Button -->
+                <div class="col-md-4 text-end a">
+                    <a href="{% url 'download_excel_template'%}" class="btn btn-view-format px-4 py-2 rounded-pill" download>
+                         Download Format
+                    </a>
+                    <div>
+                        <small class="text-muted fst-italic d-block mt-1"> Date format: <strong>YYYY-MM-DD</strong></small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-custom w-100">Upload & Save to Database</button>
+        </form>
+    </div>
+</body>
+</html>
+{% endblock %}

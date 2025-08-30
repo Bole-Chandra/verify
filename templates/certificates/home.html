@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Certificate Generation System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Generate Professional Certificates
+                    <span class="text-warning">Instantly</span>
+                </h1>
+                <p class="lead mb-4">
+                    Create, verify, and manage digital certificates with our advanced certificate generation system. 
+                    Secure, reliable, and professional.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'generate_certificate' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Generate Certificate
+                    </a>
+                    <a href="{% url 'certificate_list' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-search me-2"></i>
+                        View Certificates
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="position-relative">
+                    <img src="https://via.placeholder.com/500x350/ffffff/2563eb?text=Certificate+Preview" 
+                         alt="Certificate Preview" 
+                         class="img-fluid certificate-preview">
+                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                        <div class="bg-primary text-white px-4 py-2 rounded-pill">
+                            <i class="fas fa-certificate me-2"></i>
+                            Professional Certificates
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stats-card">
+                    <div class="stats-number">{{ stats.total_certificates|default:0 }}</div>
+                    <h5 class="mb-0">Total Certificates</h5>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="stats-number">{{ stats.verified_certificates|default:0 }}</div>
+                    <h5 class="mb-0">Verified Certificates</h5>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="stats-number">{{ stats.emails_sent|default:0 }}</div>
+                    <h5 class="mb-0">Emails Sent</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-5 fw-bold mb-3">Why Choose Our Platform?</h2>
+                <p class="lead text-muted">
+                    Discover the features that make our certificate generation system the best choice
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-bolt fa-lg"></i>
+                        </div>
+                        <h5 class="card-title">Instant Generation</h5>
+                        <p class="card-text text-muted">
+                            Generate professional certificates in seconds with our automated system.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-qrcode fa-lg"></i>
+                        </div>
+                        <h5 class="card-title">QR Verification</h5>
+                        <p class="card-text text-muted">
+                            Each certificate includes a unique QR code for instant verification.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-envelope fa-lg"></i>
+                        </div>
+                        <h5 class="card-title">Email Integration</h5>
+                        <p class="card-text text-muted">
+                            Automatically send certificates to recipients via email.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fab fa-google-drive fa-lg"></i>
+                        </div>
+                        <h5 class="card-title">Cloud Backup</h5>
+                        <p class="card-text text-muted">
+                            Automatic backup to Google Drive for secure storage.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Certificates Section -->
+{% if recent_certificates %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold mb-3">Recent Certificates</h2>
+                <p class="lead text-muted">
+                    Latest certificates generated on our platform
+                </p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for certificate in recent_certificates %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 40px; height: 40px;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h6 class="card-title mb-0">{{ certificate.full_name }}</h6>
+                                <small class="text-muted">{{ certificate.course }}</small>
+                            </div>
+                        </div>
+                        
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <i class="fas fa-university me-1"></i>
+                                {{ certificate.college_name }}
+                            </small>
+                        </p>
+                        
+                        <p class="card-text">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                {{ certificate.created_at|date:"M d, Y" }}
+                            </small>
+                        </p>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'verify_certificate' certificate.certificate_id %}" 
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-check-circle me-1"></i>
+                                Verify
+                            </a>
+                            
+                            {% if certificate.is_verified %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    Verified
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'certificate_list' %}" class="btn btn-primary">
+                <i class="fas fa-list me-2"></i>
+                View All Certificates
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="display-6 fw-bold mb-3">Ready to Generate Your Certificate?</h2>
+                <p class="lead mb-0">
+                    Join thousands of satisfied users who trust our platform for their certificate needs.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{% url 'generate_certificate' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-rocket me-2"></i>
+                    Get Started Now
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

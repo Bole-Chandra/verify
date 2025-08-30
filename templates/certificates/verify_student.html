@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block title %}Certificate Verification - Certificate Generation System{% endblock %}
+
+{% block content %}
+<head>
+  <meta name="google-site-verification" content="HqrIubQLmKNQ49ULYm3B3xAjjC-fJEk_lI8mcN8nb3Y" />
+    <style>
+        .form-control, .form-select {
+            height: calc(2.5rem + 2px);
+            font-size: 1rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        .action-buttons .btn {
+            margin-left: 1rem;
+            min-width: 130px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 767px) {
+            .action-buttons {
+                margin-top: 1rem;
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                margin-left: 0;
+                margin-bottom: 10px;
+            }
+        }
+
+        .section-heading {
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 600;
+            color: #FF8C00;
+        }
+
+        .label-muted {
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .verified-icon {
+            color: #28a745;
+            font-size: 2.5rem;
+        }
+
+        .error-icon {
+            color: #dc3545;
+            font-size: 2.5rem;
+        }
+    </style>
+</head>
+<img src="/media/CSC HEADER.png" width="100%" alt="">
+{% if not user.is_authenticated %}
+<div class="action-buttons d-flex justify-content-end  px-1">
+    <a href="/login/" class="btn btn-outline-warning">
+        <i class="fas fa-lock me-1"></i> Admin Login
+    </a>
+</div>
+{% endif %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            
+            <!-- <img src="/media/CSC LOGO.png" alt="CSC Logo" width="35%" class="mb-2 d-block mx-auto" style="object-fit: cover;"> -->
+            <!-- <h2 class="text-center mt-2 section-heading">Council for Skills and Competencies (CSC India)</h2> -->
+
+            <div class="card shadow-sm mb-5 mt-4 border border-warning" >
+                <div class="card-body p-4">
+                    <h3 class="mb-3 fw-bold section-heading">Verify Your Certificate</h3>
+                    <p class="text-muted mb-4">
+                        Please choose a verification method and enter the corresponding information to verify your certificate.
+                    </p>
+                    <form id="verification-form" method="get" action="">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-5">
+                                <label for="verification-method" class="form-label text-warning">Verification Method</label>
+                                <select class="form-select" id="verification-method" name="method" required>
+                                    <option value="roll_number"> Roll Number</option>
+                                     <option value="email">Email Address</option>
+                                    <option value="certificate_id">Certificate ID</option>
+                                    <!-- <option value="phone">Phone Number</option> -->
+
+                                    
+                                </select>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="verification-value" class="form-label text-warning" id="input-label">Roll Number</label>
+                                <input type="text" class="form-control" id="verification-value" name="value" placeholder="Enter Roll Number" required>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-warning w-100">
+                                    <i class="fas fa-search me-1"></i> Verify
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const methodSelect = document.getElementById('verification-method');
+                    const inputLabel = document.getElementById('input-label');
+                    const inputField = document.getElementById('verification-value');
+                    const placeholders = {
+                        'certificate_id': 'Enter Certificate ID',
+                        'phone': 'Enter Phone Number',
+                        'email': 'Enter Email Address',
+                        'roll_number': 'Enter Student Roll Number'
+                    };
+                    const labels = {
+                        'certificate_id': 'Certificate ID',
+                        'phone': 'Phone Number',
+                        'email': 'Email Address',
+                        'roll_number': 'Student Roll Number'
+                    };
+                    methodSelect.addEventListener('change', function () {
+                        inputLabel.textContent = labels[this.value] || 'Value';
+                        inputField.placeholder = placeholders[this.value] || 'Enter Value';
+                        inputField.value = '';
+                    });
+                });
+            </script>
+
+            {% if verification_attempted %}
+                {% if certificate and is_verified %}
+                    <!-- Verified Certificate Section -->
+                    <div class="text-center mb-5">
+                        <i class="fas fa-check-circle verified-icon mb-3"></i>
+                        <h1 class="fw-bold text-success mb-3">Certificate Verified</h1>
+                        <p class="lead text-muted">This certificate is authentic and has been successfully verified.</p>
+                    </div>
+
+                    <!-- Certificate Details -->
+                    <div class="card shadow-lg border-0 mb-4">
+                        <div class="card-header bg-warning text-white py-3">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-certificate me-2"></i> Certificate Details
+                            </h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <h6 class="text-warning fw-semibold mb-3">
+                                        <i class="fas fa-user me-2"></i> Student Information
+                                    </h6>
+                                    <p><span class="">Full Name:</span> <b>{{ certificate.full_name }}</b></p>
+									<p><span class="">Roll Number:</span> <b>{{ certificate.roll_number }}</b></p>
+									<p><span class="">Email Address:</span> <b>{{ certificate.email }}</b></p>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-warning fw-semibold mb-3">
+                                        <i class="fas fa-graduation-cap me-2"></i> Internship Information
+                                    </h6>
+                                    <p><span class="">Internship Name:</span> <b>{{ certificate.course }}</b></p>
+									<p><span class="">Institution:</span> <b>{{ certificate.college_name }}</b></p>
+									<p><span class="">Issue Date:</span> <b>{{ certificate.created_at|date:"F d, Y" }}</b></p>
+
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="bg-light p-3 rounded d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="">Certificate ID:</span>
+                                            <strong class="ms-2 font-monospace">{{ certificate.certificate_id }}</strong>
+                                        </div>
+                                        <button class="btn btn-outline-primary btn-sm"
+                                            onclick="copyToClipboard('{{ certificate.certificate_id }}', event)">
+                                            <i class="fas fa-copy me-1"></i> Copy ID
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if certificate.certificate_image %}
+                    <div class="card shadow-lg border-0 mb-4">
+                        <div class="card-header bg-warning text-white py-3">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-image me-2"></i> Certificate Preview
+                            </h5>
+                        </div>
+                        <div class="card-body text-center p-4">
+                            <img src="{{ certificate.certificate_image.url }}" class="img-fluid mb-3" style="max-height: 400px;" alt="Certificate">
+                            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                                <a href="{% url 'download_certificate' certificate.certificate_id %}" class="btn btn-warning">
+                                    <i class="fas fa-download me-2"></i> Download PNG
+                                </a>
+                                {% if certificate.certificate_pdf %}
+                                <a href="{% url 'download_certificate_pdf' certificate.certificate_id %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-file-pdf me-2"></i> Download PDF
+                                </a>
+                                {% endif %}
+                                
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="card border-success mb-4">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-success fw-semibold mb-2">
+                                    <i class="fas fa-shield-check me-2"></i> Verification Status
+                                </h6>
+                                <p class="mb-0 text-muted">
+                                    Verified on {{ certificate.created_at|date:"F d, Y \\a\\t g:i A" }}
+                                </p>
+                            </div>
+                            <span class="badge bg-success fs-6 px-3 py-2">
+                                <i class="fas fa-check-circle me-1"></i> VERIFIED
+                            </span>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <!-- Certificate Not Verified -->
+                    <div class="text-center mb-5">
+                        <i class="fas fa-times-circle error-icon mb-3"></i>
+                        <h1 class="display-6 fw-bold text-danger mb-3">Certificate Not Verified</h1>
+                        <p class="lead text-muted">
+                            {{ error_message|default:"The certificate could not be verified. Please check your details and try again." }}
+                        </p>
+                    </div>
+
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger text-white py-3">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-exclamation-triangle me-2"></i> Verification Failed
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-3">Possible reasons:</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-times text-danger me-2"></i> Invalid certificate ID</li>
+                                <li><i class="fas fa-times text-danger me-2"></i> Certificate has been revoked</li>
+                                <li><i class="fas fa-times text-danger me-2"></i> No record found in the system</li>
+                            </ul>
+                           
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyToClipboard(text, event) {
+    navigator.clipboard.writeText(text).then(function () {
+        const btn = event.target.closest('button');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-success');
+        setTimeout(function () {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-primary');
+        }, 2000);
+    }).catch(function (err) {
+        console.error('Clipboard copy failed:', err);
+        alert('Failed to copy to clipboard');
+    });
+}
+window.addEventListener('DOMContentLoaded', function () {
+        const url = new URL(window.location);
+        const hasQueryParams = url.searchParams.get('method') && url.searchParams.get('value');
+        
+        if (hasQueryParams) {
+            // Remove the query params from the address bar
+            window.history.replaceState({}, document.title, url.pathname);
+        }
+    });
+  
+function shareCertificate() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Certificate Verification',
+            text: 'Check out this verified certificate',
+            url: window.location.href
+        }).catch(console.error);
+    } else {
+        copyToClipboard(window.location.href);
+    }
+}
+</script>
+{% endblock %}

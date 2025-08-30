@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg rounded p-4 border-4">
+        <h2 class="text-center mb-4">🧾 Generate Certificates from Student Database</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+             <div class="mb-3">
+                <label for="template" class="form-label fw-semibold">
+                    <i class="fas fa-image me-2 text-primary"></i>
+                    Certificate Template 
+                </label>
+                <select name="template" id="template" class="form-control" required>
+                    <option value="Pragna">Pragna</option>
+                    <option value="CSCIndia">CSCIndia</option>
+                    <option value="DataValley">DataValley</option>
+                    <option value="IGIATPragna">IGIATPragna</option>
+                  	<option value="UrChoice">UrChoice</option>
+                    <option value="Proplore">Proplore</option>
+                </select>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-success px-4 py-2 rounded-pill">
+                    🚀 Generate All Certificates
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

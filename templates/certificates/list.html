@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+
+{% block title %}All Certificates - Certificate Generation System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-certificate me-3"></i>
+                    All Certificates
+                </h1>
+                <p class="lead text-muted">
+                    Browse and manage all generated certificates
+                </p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="card text-center h-100 border-0"
+                         style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        <div class="card-body text-white p-4">
+                            <i class="fas fa-certificate fa-2x mb-3"></i>
+                            <h3 class="card-title">{{ total_certificates }}</h3>
+                            <p class="card-text">Total Certificates</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card text-center h-100 border-0"
+                         style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <div class="card-body text-white p-4">
+                            <i class="fas fa-check-circle fa-2x mb-3"></i>
+                            <h3 class="card-title">{{ verified_certificates }}</h3>
+                            <p class="card-text">Verified</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card text-center h-100 border-0"
+                         style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                        <div class="card-body text-white p-4">
+                            <i class="fas fa-envelope fa-2x mb-3"></i>
+                            <h3 class="card-title">{{ emails_sent }}</h3>
+                            <p class="card-text">Emails Sent</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card text-center h-100 border-0"
+                         style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                        <div class="card-body text-white p-4">
+                            <i class="fab fa-google-drive fa-2x mb-3"></i>
+                            <h3 class="card-title">{{ drive_uploads }}</h3>
+                            <p class="card-text">Drive Backups</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="card shadow border-0 mb-4">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="search" name="search_query"
+                                   placeholder="Search by name, email, roll number, or certificate ID"
+                                   value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="course" class="form-label">Course</label>
+                            <select class="form-select" id="course" name="course_filter">
+                                <option value="">All Courses</option>
+                                {% for course in courses %}
+                                    <option value="{{ course }}" {% if course == course_filter %}selected{% endif %}>
+                                        {{ course }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="college" class="form-label">Institution</label>
+                            <select class="form-select" id="college" name="college_filter">
+                                <option value="">All Institutions</option>
+                                {% for college in colleges %}
+                                    <option value="{{ college }}" {% if college == college_filter %}selected{% endif %}>
+                                        {{ college }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label d-block">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-1"></i>Filter
+                            </button>
+                        </div>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                    </form>
+
+
+                </div>
+            </div>
+
+            <!-- Certificates List -->
+            {% if certificates %}
+            <div class="row g-4">
+                {% for certificate in certificates %}
+                <div class="col-lg-6 col-xl-4">
+                    <div class="card h-100 shadow border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-user-graduate me-2"></i>
+                                {{ certificate.full_name }}
+                            </h6>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted">Course</small>
+                                <p class="fw-semibold mb-1">{{ certificate.course }}</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-muted">Institution</small>
+                                <p class="mb-1">{{ certificate.college_name }}</p>
+                            </div>
+
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">Roll Number</small>
+                                    <p class="mb-0">{{ certificate.roll_number }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Issue Date</small>
+                                    <p class="mb-0">{{ certificate.created_at|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Status Badges -->
+                            <div class="mb-3">
+                                {% if certificate.is_verified %}
+                                    <span class="badge bg-success me-1">
+                                        <i class="fas fa-check-circle me-1"></i>Verified
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning me-1">
+                                        <i class="fas fa-clock me-1"></i>Pending
+                                    </span>
+                                {% endif %}
+
+                                {% if certificate.email_sent %}
+                                    <span class="badge bg-info me-1">
+                                        <i class="fas fa-envelope me-1"></i>Emailed
+                                    </span>
+                                {% endif %}
+
+                                {% if certificate.drive_uploaded %}
+                                    <span class="badge bg-secondary me-1">
+                                        <i class="fab fa-google-drive me-1"></i>Backed Up
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'certificate_detail' certificate.certificate_id %}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </a>
+                                    <a href="{% url 'verify_certificate' certificate.certificate_id %}"
+                                       class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-check-circle me-1"></i>Verify
+                                    </a>
+                                </div>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                            type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-download me-1"></i>Download
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="{% url 'download_certificate' certificate.certificate_id %}">
+                                                <i class="fas fa-image me-2"></i>PNG Format
+                                            </a>
+                                        </li>
+                                        {% if certificate.certificate_pdf %}
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="{% url 'download_certificate_pdf' certificate.certificate_id %}">
+                                                <i class="fas fa-file-pdf me-2"></i>PDF Format
+                                            </a>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Certificate pagination" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.college %}&college={{ request.GET.college }}{% endif %}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.college %}&college={{ request.GET.college }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.college %}&college={{ request.GET.college }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.college %}&college={{ request.GET.college }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.college %}&college={{ request.GET.college }}{% endif %}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <!-- No Certificates Found -->
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-search fa-4x text-muted"></i>
+                </div>
+                <h3 class="text-muted mb-3">No Certificates Found</h3>
+                <p class="text-muted mb-4">
+                    {% if request.GET.search or request.GET.course or request.GET.college %}
+                        No certificates match your search criteria. Try adjusting your filters.
+                    {% else %}
+                        No certificates have been generated yet.
+                    {% endif %}
+                </p>
+                <div>
+                    {% if request.GET.search or request.GET.course or request.GET.college %}
+                        <a href="{% url 'certificate_list' %}" class="btn btn-outline-primary me-3">
+                            <i class="fas fa-times me-2"></i>Clear Filters
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'generate_certificate' %}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Generate First Certificate
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="text-center mt-5">
+                <a href="{% url 'generate_certificate' %}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Generate New Certificate
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-home me-2"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

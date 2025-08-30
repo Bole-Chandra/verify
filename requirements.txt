@@ -1,0 +1,9 @@
+Django==5.2.3
+Pillow==10.4.0
+qrcode[pil]==7.4.2
+google-api-python-client==2.147.0
+google-auth-oauthlib==1.2.1
+python-decouple==3.8
+xhtml2pdf
+pandas
+openpyxl>=3.1.2

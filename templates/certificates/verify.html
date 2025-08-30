@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+
+{% block title %}Certificate Verification - Certificate Generation System{% endblock %}
+{% block head_extra %}
+<link rel="canonical" href="https://verify.cscindia.org.in/">
+<meta name="robots" content="noindex, follow">
+<link rel="canonical" href="https://verify.cscindia.org.in/">
+{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% if certificate and is_verified %}
+                <!-- Verified Certificate -->
+                <div class="text-center mb-5">
+                   <!-- <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div> -->
+                  
+    <img src="/media/CSC LOGO.png" alt="CSC Logo" height="100%" width="40%" style="object-fit: cover; height: auto;">
+
+                    <h1 class="display-5 fw-bold text-success mb-3">
+                        Certificate Verified ✓
+                    </h1>
+                    <p class="lead text-muted">
+                        This certificate is authentic and has been verified by our system.
+                    </p>
+                </div>
+
+                <!-- Certificate Details Card -->
+                <div class="card shadow-lg border-0 mb-4">
+                    <div class="card-header bg-warning text-white py-3">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-certificate me-2"></i>
+                            Certificate Details
+                        </h4>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <!-- Student Information -->
+                            <div class="col-md-6">
+                                <h6 class="text-warning fw-semibold mb-3">
+                                    <i class="fas fa-user me-2"></i>
+                                    Student Information
+                                </h6>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-muted">Full Name</label>
+                                    <p class="fs-5 fw-bold text-dark mb-0">{{ certificate.full_name }}</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-muted">Roll Number</label>
+                                    <p class="mb-0">{{ certificate.roll_number }}</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-muted">Email Address</label>
+                                    <p class="mb-0">{{ certificate.email }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Course Information -->
+                            <div class="col-md-6">
+                                <h6 class="text-warning fw-semibold mb-3">
+                                    <i class="fas fa-graduation-cap me-2"></i>
+                                    Internship Information
+                                </h6>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-muted">Internship Name</label>
+                                    <p class="fs-5 fw-bold text-dark mb-0">{{ certificate.course }}</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-muted">Institution</label>
+                                    <p class="mb-0">{{ certificate.college_name }}</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-muted">Issue Date</label>
+                                    <p class="mb-0">{{ certificate.created_at|date:"F d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Certificate ID -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="bg-light p-3 rounded">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <label class="form-label fw-semibold text-muted mb-1">Certificate ID</label>
+                                            <p class="font-monospace fw-bold mb-0">{{ certificate.certificate_id }}</p>
+                                        </div>
+                                        <div class="col-md-4 text-md-end">
+                                            <button class="btn btn-outline-warning btn-sm"
+                                            onclick="copyToClipboard('{{ certificate.certificate_id }}', event)">
+                                        <i class="fas fa-copy me-1"></i> Copy ID
+                                    </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certificate Preview -->
+                {% if certificate.certificate_image %}
+                <div class="card shadow-lg border-0 mb-4">
+                    <div class="card-header bg-warning text-white py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-image me-2"></i>
+                            Certificate Preview
+                        </h5>
+                    </div>
+                    <div class="card-body text-center p-4">
+                        <img src="{{ certificate.certificate_image.url }}"
+                             alt="Certificate for {{ certificate.full_name }}"
+                             class="img-fluid certificate-preview mb-3"
+                             style="max-height: 400px;">
+
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a href="{% url 'download_certificate' certificate.certificate_id %}"
+                               class="btn btn-warning">
+                                <i class="fas fa-download me-2"></i>
+                                Download PNG
+                            </a>
+
+                            {% if certificate.certificate_pdf %}
+                            <a href="{% url 'download_certificate_pdf' certificate.certificate_id %}"
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-file-pdf me-2"></i>
+                                Download PDF
+                            </a>
+                            {% endif %}
+
+                            <button class="btn btn-outline-warning" onclick="shareCertificate()">
+                                <i class="fas fa-share-alt me-2"></i>
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Verification Status -->
+                <div class="card border-success mb-4">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="text-success fw-semibold mb-2">
+                                    <i class="fas fa-shield-check me-2"></i>
+                                    Verification Status
+                                </h6>
+                                <p class="mb-0 text-muted">
+                                    This certificate has been verified and is authentic.
+                                    Verification completed on {{ certificate.created_at|date:"F d, Y \a\t g:i A" }}.
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <span class="badge bg-success fs-6 px-3 py-2">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    VERIFIED
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% else %}
+                <!-- Invalid/Not Found Certificate -->
+                <div class="text-center mb-5">
+                    <div class="bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-times-circle fa-2x"></i>
+                    </div>
+                    <h1 class="display-5 fw-bold text-danger mb-3">
+                        Certificate Not Verified
+                    </h1>
+                    <p class="lead text-muted">
+                        {% if error_message %}
+                            {{ error_message }}
+                        {% else %}
+                            The certificate could not be verified. Please check the certificate ID and try again.
+                        {% endif %}
+                    </p>
+                </div>
+
+                <!-- Error Card -->
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white py-3">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Verification Failed
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-3">The certificate verification failed for one of the following reasons:</p>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-times text-danger me-2"></i>
+                                Invalid certificate ID
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-times text-danger me-2"></i>
+                                Certificate has been revoked
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-times text-danger me-2"></i>
+                                Certificate does not exist in our system
+                            </li>
+                        </ul>
+
+
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Additional Actions -->
+            <!-- <div class="text-center mt-4">
+                <a href="{% url 'certificate_list' %}" class="btn btn-outline-primary me-3">
+                    <i class="fas fa-list me-2"></i>
+                    View All Certificates
+                </a>
+                <a href="{% url 'generate_certificate' %}" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Generate New Certificate
+                </a>
+            </div> -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyToClipboard(text, event) {
+    navigator.clipboard.writeText(text).then(function() {
+        const btn = event.target.closest('button');
+        const originalHTML = btn.innerHTML;
+
+        btn.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-success');
+
+        setTimeout(function() {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-primary');
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Clipboard copy failed:', err);
+        alert('Failed to copy to clipboard');
+    });
+}
+
+
+function shareCertificate() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Certificate Verification',
+            text: 'Check out this verified certificate',
+            url: window.location.href
+        }).catch(console.error);
+    } else {
+        // Fallback: copy URL to clipboard
+        copyToClipboard(window.location.href);
+    }
+}
+
+// Auto-refresh verification status (optional)
+{% if certificate and is_verified %}
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any real-time verification updates here if needed
+});
+{% endif %}
+</script>
+{% endblock %}
+
